@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grégory Palluault — Concepteur pédagogique numérique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e17;
+    --paper: #fffcf5;
+    --accent1: #ff6b35;
+    --accent2: #4ecdc4;
+    --accent3: #ffe66d;
+    --accent4: #a855f7;
+    --muted: #6b6672;
+    --card-bg: #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.5;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    padding: 4rem 3rem 4rem 5vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-right {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent3);
+    color: var(--ink);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    width: fit-content;
+  }
+
+  .tag::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--accent1);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 5vw, 5rem);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 span {
+    display: block;
+    color: var(--accent1);
+    position: relative;
+  }
+
+  h1 span::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 0;
+    width: 100%; height: 6px;
+    background: var(--accent3);
+    z-index: -1;
+    transform: skewX(-3deg);
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--muted);
+    font-weight: 300;
+    margin: 1.5rem 0 2.5rem;
+    max-width: 380px;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .pill {
+    padding: 0.4rem 1rem;
+    border: 1.5px solid currentColor;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--ink);
+    transition: all 0.2s;
+  }
+
+  .pill:nth-child(2) { color: var(--accent2); border-color: var(--accent2); }
+  .pill:nth-child(3) { color: var(--accent4); border-color: var(--accent4); }
+  .pill:nth-child(4) { color: var(--accent1); border-color: var(--accent1); }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 1rem 2rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: fit-content;
+  }
+
+  .cta:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 var(--accent1);
+  }
+
+  /* ── HERO RIGHT ── */
+  .orbit-container {
+    width: 420px; height: 420px;
+    position: relative;
+  }
+
+  .orbit-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px; height: 140px;
+    background: var(--ink);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--paper);
+    z-index: 3;
+    box-shadow: 0 0 0 12px var(--paper), 0 0 0 14px var(--accent1);
+  }
+
+  .orbit-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(15,14,23,0.15);
+    transform: translate(-50%, -50%);
+    animation: spin linear infinite;
+  }
+
+  .ring-1 { width: 220px; height: 220px; animation-duration: 12s; }
+  .ring-2 { width: 340px; height: 340px; animation-duration: 20s; animation-direction: reverse; }
+  .ring-3 { width: 410px; height: 410px; animation-duration: 30s; }
+
+  @keyframes spin { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+  .orbit-dot {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--paper);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    animation: counter-spin linear infinite;
+  }
+
+  .ring-1 .orbit-dot { width: 48px; height: 48px; animation-duration: 12s; }
+  .ring-2 .orbit-dot { width: 56px; height: 56px; animation-duration: 20s; animation-direction: reverse; }
+
+  @keyframes counter-spin { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+
+  .dot-pos-1 { top: 0; left: 50%; transform: translate(-50%, -50%); background: var(--accent1); }
+  .dot-pos-2 { bottom: 0; left: 50%; transform: translate(-50%, 50%); background: var(--accent2); }
+  .dot-pos-3 { top: 50%; right: 0; transform: translate(50%, -50%); background: var(--accent4); }
+  .dot-pos-4 { top: 50%; left: 0; transform: translate(-50%, -50%); background: var(--accent3); color: var(--ink); }
+
+  /* BG blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.25;
+    pointer-events: none;
+  }
+  .blob-1 { width: 500px; height: 500px; background: var(--accent2); top: -100px; right: -100px; }
+  .blob-2 { width: 300px; height: 300px; background: var(--accent3); bottom: 50px; right: 100px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1rem 5vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(12px);
+    background: rgba(255,252,245,0.85);
+    border-bottom: 1px solid rgba(15,14,23,0.06);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-logo span { color: var(--accent1); }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--ink); font-size: 0.85rem; font-weight: 400; opacity: 0.7; transition: opacity 0.2s; }
+  .nav-links a:hover { opacity: 1; }
+
+  /* ── SECTIONS ── */
+  section { padding: 6rem 5vw; }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1.5px;
+    background: var(--accent1);
+    opacity: 0.4;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 3rem;
+  }
+
+  /* ── ABOUT ── */
+  .about {
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about .section-label { color: var(--accent3); }
+  .about .section-label::after { background: var(--accent3); }
+  .about h2 { color: var(--paper); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .about-text { font-size: 1.05rem; line-height: 1.8; opacity: 0.85; }
+  .about-text p + p { margin-top: 1.2rem; }
+  .about-text strong { color: var(--accent3); font-weight: 700; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: background 0.2s;
+  }
+
+  .stat-card:hover { background: rgba(255,255,255,0.1); }
+
+  .stat-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-number.c1 { color: var(--accent1); }
+  .stat-number.c2 { color: var(--accent2); }
+  .stat-number.c3 { color: var(--accent3); }
+  .stat-number.c4 { color: var(--accent4); }
+
+  .stat-label { font-size: 0.82rem; opacity: 0.6; line-height: 1.4; }
+
+  /* ── PROJECTS ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(15,14,23,0.08);
+    transition: transform 0.25s, box-shadow 0.25s;
+    cursor: default;
+    position: relative;
+  }
+
+  .project-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(15,14,23,0.12);
+  }
+
+  .project-card:nth-child(1) .card-accent { background: linear-gradient(135deg, #ff6b35, #ff9f1c); }
+  .project-card:nth-child(2) .card-accent { background: linear-gradient(135deg, #4ecdc4, #44a3aa); }
+  .project-card:nth-child(3) .card-accent { background: linear-gradient(135deg, #a855f7, #6366f1); }
+  .project-card:nth-child(4) .card-accent { background: linear-gradient(135deg, #ffe66d, #ffd93d); }
+  .project-card:nth-child(5) .card-accent { background: linear-gradient(135deg, #06d6a0, #118ab2); }
+
+  .card-accent {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+  }
+
+  .card-badge {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(8px);
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+  }
+
+  .card-body { padding: 1.5rem; }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .card-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .card-tag {
+    background: rgba(15,14,23,0.05);
+    color: var(--ink);
+    font-size: 0.72rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 400;
+  }
+
+  .card-context {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    border-top: 1px solid rgba(15,14,23,0.06);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .card-context .icon { font-size: 1rem; }
+
+  /* ── SKILLS ── */
+  .skills-section { background: #f8f5ff; }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .skill-block {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid rgba(15,14,23,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+
+  .skill-block:nth-child(1)::before { background: var(--accent1); }
+  .skill-block:nth-child(2)::before { background: var(--accent2); }
+  .skill-block:nth-child(3)::before { background: var(--accent4); }
+
+  .skill-icon { font-size: 2rem; margin-bottom: 1rem; }
+
+  .skill-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .skill-list { list-style: none; }
+  .skill-list li {
+    font-size: 0.85rem;
+    color: var(--muted);
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(15,14,23,0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .skill-list li::before { content: '→'; color: var(--accent1); font-size: 0.75rem; }
+
+  /* ── CONTACT ── */
+  .contact-section {
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+  }
+
+  .contact-section h2 { color: var(--paper); }
+  .contact-section .section-label { color: var(--accent2); justify-content: center; }
+  .contact-section .section-label::after { display: none; }
+
+  .contact-big {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    font-weight: 300;
+    opacity: 0.7;
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    line-height: 1.6;
+  }
+
+  .contact-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent3);
+    text-decoration: none;
+    border: 2px solid var(--accent3);
+    padding: 1rem 2.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .contact-email:hover {
+    background: var(--accent3);
+    color: var(--ink);
+  }
+
+  .contact-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-link {
+    text-decoration: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .contact-link:hover { color: var(--accent2); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.3);
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .hero-left { padding: 8rem 5vw 4rem; }
+    .about-grid { grid-template-columns: 1fr; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">G.<span>P</span></div>
+  <ul class="nav-links">
+    <li><a href="#projets">Projets</a></li>
+    <li><a href="#apropos">À propos</a></li>
+    <li><a href="#competences">Compétences</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="tag">Disponible pour collaborer</div>
+    <h1>Grégory<br><span>Palluault</span></h1>
+    <p class="subtitle">Concepteur pédagogique numérique — je transforme des référentiels arides en expériences d'apprentissage qui donnent envie d'apprendre.</p>
+    <div class="pills">
+      <span class="pill">Serious games</span>
+      <span class="pill">Firebase & JS</span>
+      <span class="pill">IA pédagogique</span>
+      <span class="pill">Bac Pro / BTS</span>
+    </div>
+    <a href="#projets" class="cta">Voir mes projets →</a>
+  </div>
+
+  <div class="hero-right">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="orbit-container">
+      <div class="orbit-ring ring-3"></div>
+      <div class="orbit-ring ring-2">
+        <div class="orbit-dot dot-pos-3">🎮</div>
+        <div class="orbit-dot dot-pos-4">🧮</div>
+      </div>
+      <div class="orbit-ring ring-1">
+        <div class="orbit-dot dot-pos-1">🚀</div>
+        <div class="orbit-dot dot-pos-2">📐</div>
+      </div>
+      <div class="orbit-center">GP</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="apropos">
+  <div class="section-label">À propos</div>
+  <div class="about-grid">
+    <div>
+      <h2>Pédagogue<br>d'abord.<br>Maker ensuite.</h2>
+      <div class="about-text">
+        <p>Formateur en <strong>mathématiques et sciences</strong> en CFA pour des apprentis Bac Pro et BTS, j'ai développé en parallèle une pratique de la conception d'outils numériques éducatifs — serious games, simulations interactives, QCM adaptatifs.</p>
+        <p>Mon point de vue est simple : un outil pédagogique doit d'abord <strong>servir l'apprenant</strong>, pas impressionner le formateur. Chaque projet part d'un problème réel en classe et d'une question : qu'est-ce qui pourrait vraiment changer l'engagement ?</p>
+        <p>Techniquement à l'aise avec <strong>HTML/JS/Firebase</strong> et les outils IA, je construis des applications déployables directement sur Moodle ou GitHub Pages — sans infrastructure lourde, sans dépendances coûteuses.</p>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number c1">5+</div>
+        <div class="stat-label">Serious games déployés en classe</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number c2">3</div>
+        <div class="stat-label">Niveaux de formation couverts (CAP, Bac Pro, BTS)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number c3">100%</div>
+        <div class="stat-label">Projets déployables sans serveur dédié</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number c4">∞</div>
+        <div class="stat-label">Questions générées par IA pour les QCM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projets">
+  <div class="section-label">Réalisations</div>
+  <h2>Projets</h2>
+
+  <div class="projects-grid">
+
+    <!-- Mental War Galactic -->
+    <div class="project-card fade-up">
+      <div class="card-accent">
+        🌌
+        <span class="card-badge">Multijoueur</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Mental War Galactic</div>
+        <div class="card-desc">Jeu de conquête spatiale en temps réel : les équipes répondent à des questions de calcul mental pour capturer des planètes. Dashboard admin séparé, synchronisation Firebase en temps réel.</div>
+        <div class="card-tags">
+          <span class="card-tag">Firebase Realtime DB</span>
+          <span class="card-tag">JS vanilla</span>
+          <span class="card-tag">Multijoueur</span>
+          <span class="card-tag">Calcul mental</span>
+        </div>
+        <div class="card-context">
+          <span class="icon">🎓</span>
+          <span>Bac Pro — Mathématiques appliquées</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trivial Poursuite -->
+    <div class="project-card fade-up">
+      <div class="card-accent">
+        🎲
+        <span class="card-badge">2–4 équipes</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Trivial Poursuite Bac Pro</div>
+        <div class="card-desc">Adaptation du Trivial Pursuit en jeu de révision multi-équipes sur plateau SVG animé. Questions issues du référentiel officiel, déployable sur Moodle en fichier unique.</div>
+        <div class="card-tags">
+          <span class="card-tag">SVG dynamique</span>
+          <span class="card-tag">Firebase</span>
+          <span class="card-tag">Single-file HTML</span>
+          <span class="card-tag">QCM</span>
+        </div>
+        <div class="card-context">
+          <span class="icon">🎓</span>
+          <span>Bac Pro — Révisions transversales</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Automathic -->
+    <div class="project-card fade-up">
+      <div class="card-accent">
+        🚜
+        <span class="card-badge">Serious game</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">AgroMath / Automathic</div>
+        <div class="card-desc">Simulation de conduite agricole couplée à des exercices de mathématiques contextualisés. L'apprenant pilote un tracteur et débloque des niveaux en résolvant des problèmes issus du métier.</div>
+        <div class="card-tags">
+          <span class="card-tag">Canvas 2D</span>
+          <span class="card-tag">Gamification</span>
+          <span class="card-tag">Contexte agricole</span>
+        </div>
+        <div class="card-context">
+          <span class="icon">🎓</span>
+          <span>Bac Pro CGEA — Mathématiques</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Space Temps -->
+    <div class="project-card fade-up">
+      <div class="card-accent">
+        ⏱️
+        <span class="card-badge">Quiz chrono</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Space Temps</div>
+        <div class="card-desc">Quiz de gestion du temps sous forme de course spatiale. Les apprenants s'affrontent en répondant à des questions de planification et d'organisation — compétence transversale clé en apprentissage.</div>
+        <div class="card-tags">
+          <span class="card-tag">Temps réel</span>
+          <span class="card-tag">Animation CSS</span>
+          <span class="card-tag">Compétences transversales</span>
+        </div>
+        <div class="card-context">
+          <span class="icon">🎓</span>
+          <span>CFA — Compétences professionnelles</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TPs Arduino -->
+    <div class="project-card fade-up">
+      <div class="card-accent">
+        🔌
+        <span class="card-badge">6 modules</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">TPs Tinkercad / Arduino interactifs</div>
+        <div class="card-desc">6 travaux pratiques HTML interactifs sur des scénarios agricoles réels (diagnostic capteur, automatisme d'irrigation…). Chaque TP simule un environnement Tinkercad sans plugin requis.</div>
+        <div class="card-tags">
+          <span class="card-tag">Arduino simulé</span>
+          <span class="card-tag">Diagnostic agricole</span>
+          <span class="card-tag">HTML interactif</span>
+        </div>
+        <div class="card-context">
+          <span class="icon">🎓</span>
+          <span>Bac Pro CGEA — Sciences & techno</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="skills-section" id="competences">
+  <div class="section-label">Compétences</div>
+  <h2>Ce que j'apporte</h2>
+
+  <div class="skills-grid">
+    <div class="skill-block fade-up">
+      <div class="skill-icon">🎯</div>
+      <div class="skill-title">Ingénierie pédagogique</div>
+      <ul class="skill-list">
+        <li>Scénarisation d'apprentissages</li>
+        <li>Lecture & exploitation des référentiels</li>
+        <li>Gamification & serious game design</li>
+        <li>Évaluation par compétences (CCF)</li>
+        <li>Différenciation pédagogique</li>
+      </ul>
+    </div>
+
+    <div class="skill-block fade-up">
+      <div class="skill-icon">⚙️</div>
+      <div class="skill-title">Développement & outils</div>
+      <ul class="skill-list">
+        <li>HTML / CSS / JavaScript (vanilla)</li>
+        <li>Firebase (Realtime DB, Auth)</li>
+        <li>Moodle (déploiement, H5P, QCM)</li>
+        <li>GitHub Pages</li>
+        <li>SVG dynamique & Canvas 2D</li>
+      </ul>
+    </div>
+
+    <div class="skill-block fade-up">
+      <div class="skill-icon">🤖</div>
+      <div class="skill-title">IA & automatisation</div>
+      <ul class="skill-list">
+        <li>Prompt engineering avancé</li>
+        <li>Génération de QCM par IA</li>
+        <li>Automatisation DOCX (python-docx)</li>
+        <li>Workflow IA + pédagogie</li>
+        <li>Claude API & intégration LLM</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="section-label">Contact</div>
+  <h2>Travaillons ensemble</h2>
+  <p class="contact-big">Vous cherchez un regard pédagogique sur un projet EdTech ? Un concepteur capable de prototyper rapidement ? Parlons-en.</p>
+  <a href="mailto:gregory.palluault@exemple.fr" class="contact-email">✉ gregory.palluault@exemple.fr</a>
+  <div class="contact-links">
+    <a href="https://github.com" class="contact-link">GitHub →</a>
+    <a href="https://linkedin.com" class="contact-link">LinkedIn →</a>
+  </div>
+</section>
+
+<footer>
+  © 2026 Grégory Palluault — Concepteur pédagogique numérique
+</footer>
+
+<script>
+  // Fade-up on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
